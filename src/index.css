@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+/* ── Tailwind v4: custom theme defined here in CSS (no tailwind.config.js) ── */
+@theme {
+  --font-display: 'Sora', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  --color-rail-500:  #0c87e8;
+  --color-rail-600:  #006ac6;
+  --color-rail-700:  #0054a0;
+  --color-rail-800:  #044784;
+  --color-rail-900:  #0a3c6d;
+  --color-rail-950:  #072649;
+
+  --color-steel-400: #8795aa;
+  --color-steel-500: #677890;
+  --color-steel-600: #536078;
+  --color-steel-700: #444f62;
+
+  --animate-fade-in:   fadeIn 0.4s ease forwards;
+  --animate-slide-up:  slideUp 0.4s ease forwards;
+  --animate-pulse-dot: pulseDot 2s infinite;
+}
+
+@keyframes fadeIn  { from { opacity: 0 } to { opacity: 1 } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: translateY(0) } }
+@keyframes pulseDot { 0%, 100% { opacity: 1 } 50% { opacity: 0.3 } }
+
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+}
+
+/* ── Ant Design v6 overrides ── */
+.ant-table-thead > tr > th {
+  background: #f6f7f9 !important;
+  border-bottom: 1px solid #eceef2 !important;
+  padding: 12px 16px !important;
+}
+.ant-table-tbody > tr > td {
+  padding: 14px 16px !important;
+  border-bottom: 1px solid #f0f1f3 !important;
+}
+.ant-table-tbody > tr:last-child > td { border-bottom: none !important; }
+.ant-table-tbody > tr:hover > td { background: #f8fbff !important; }
+
+.ant-btn       { font-family: 'DM Sans', sans-serif !important; }
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-input-number { font-family: 'DM Sans', sans-serif !important; font-size: 14px !important; }
+.ant-form-item-label > label { font-family: 'DM Sans', sans-serif !important; }
+.ant-message-notice-content  { border-radius: 12px !important; font-family: 'DM Sans', sans-serif !important; }
+.ant-modal-content           { box-shadow: 0 20px 60px rgba(0,0,0,0.18) !important; }
+.ant-popover-inner           { border-radius: 12px !important; }
+.ant-pagination-item-active  { border-color: #0054a0 !important; }
+.ant-pagination-item-active a { color: #0054a0 !important; }
