@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom"
 import { App } from "antd"
 import { useAuth } from "../context/AuthContext"
+import Avatar from './../components/Avatar';
 
 const IconTrain = () => <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M4 16c0 1.1.9 2 2 2h1v2h2v-2h6v2h2v-2h1c1.1 0 2-.9 2-2V8H4v8zm2-6h12v4H6v-4zM15 3l-1-2H10L9 3H4v2h16V3h-5z" /></svg>
 const IconDash = () => <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" /></svg>
@@ -111,14 +112,15 @@ export default function AdminLayout() {
                     padding: "10px 14px", marginBottom: 6, borderRadius: 10,
                     background: "rgba(255,255,255,0.05)",
                 }}>
-                    <div style={{
+                    {/* <div style={{
                         width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
                         background: "linear-gradient(135deg,#0054a0,#0c87e8)",
                         display: "flex", alignItems: "center", justifyContent: "center",
                         color: "white", fontFamily: "Sora,sans-serif", fontWeight: 700, fontSize: "0.85rem",
                     }}>
                         {user?.username?.[0]?.toUpperCase()}
-                    </div>
+                    </div> */}
+                    <Avatar user={user}/>
                     <div style={{ overflow: "hidden" }}>
                         <div style={{ color: "white", fontFamily: "DM Sans,sans-serif", fontWeight: 600, fontSize: "0.85rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                             {user?.username}
@@ -180,14 +182,15 @@ export default function AdminLayout() {
 
                     {/* Avatar + hamburger */}
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <div style={{
+                        {/* <div style={{
                             width: 32, height: 32, borderRadius: "50%",
                             background: "rgba(255,255,255,0.15)",
                             display: "flex", alignItems: "center", justifyContent: "center",
                             color: "white", fontFamily: "Sora,sans-serif", fontWeight: 700, fontSize: "0.85rem",
                         }}>
                             {user?.username?.[0]?.toUpperCase()}
-                        </div>
+                        </div> */}
+                        <Avatar user={user}/>
                         <button
                             onClick={() => setMenuOpen(v => !v)}
                             style={{
@@ -223,14 +226,15 @@ export default function AdminLayout() {
                             padding: "10px 12px", borderRadius: 10,
                             background: "rgba(255,255,255,0.06)", marginBottom: "0.75rem",
                         }}>
-                            <div style={{
+                            {/* <div style={{
                                 width: 34, height: 34, borderRadius: "50%", flexShrink: 0,
                                 background: "linear-gradient(135deg,#0054a0,#0c87e8)",
                                 display: "flex", alignItems: "center", justifyContent: "center",
                                 color: "white", fontFamily: "Sora,sans-serif", fontWeight: 700, fontSize: "0.9rem",
                             }}>
                                 {user?.username?.[0]?.toUpperCase()}
-                            </div>
+                            </div> */}
+                            <Avatar user={user}/>
                             <div>
                                 <div style={{ color: "white", fontFamily: "DM Sans,sans-serif", fontWeight: 600, fontSize: "0.9rem" }}>
                                     {user?.username}

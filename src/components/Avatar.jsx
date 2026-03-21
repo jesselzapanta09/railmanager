@@ -7,7 +7,6 @@ import { imageUrl } from "../services/api"
  */
 export default function Avatar({ user, size = 40, fontSize = "1rem", style = {} }) {
     const src = imageUrl(user?.avatar)
-    console.log(user)
     if (src) {
         return (
             <img

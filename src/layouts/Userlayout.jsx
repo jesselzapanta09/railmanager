@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom"
 import { App } from "antd"
 import { useAuth } from "../context/AuthContext"
+import Avatar from "../components/Avatar"
 
 const IconTrain = () => <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M4 16c0 1.1.9 2 2 2h1v2h2v-2h6v2h2v-2h1c1.1 0 2-.9 2-2V8H4v8zm2-6h12v4H6v-4zM15 3l-1-2H10L9 3H4v2h16V3h-5z" /></svg>
 const IconLogout = () => <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" /></svg>
@@ -107,14 +108,15 @@ export default function UserLayout() {
                                 padding: "6px 12px", borderRadius: 100,
                                 background: "#f0f7ff", border: "1px solid #e0effe",
                             }}>
-                                <div style={{
+                                {/* <div style={{
                                     width: 26, height: 26, borderRadius: "50%", flexShrink: 0,
                                     background: "linear-gradient(135deg,#0054a0,#0c87e8)",
                                     display: "flex", alignItems: "center", justifyContent: "center",
                                     color: "white", fontFamily: "Sora,sans-serif", fontWeight: 700, fontSize: "0.75rem",
                                 }}>
                                     {user?.username?.[0]?.toUpperCase()}
-                                </div>
+                                </div> */}
+                                <Avatar user={user}/>
                                 <div>
                                     <div style={{ fontFamily: "DM Sans,sans-serif", fontWeight: 600, fontSize: "0.825rem", color: "#0a3c6d" }}>
                                         {user?.username}
@@ -142,15 +144,16 @@ export default function UserLayout() {
                 {!isDesktop && (
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                         {/* Avatar initial only */}
-                        <div style={{
+                        {/* <div style={{
                             width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
                             background: "linear-gradient(135deg,#0054a0,#0c87e8)",
                             display: "flex", alignItems: "center", justifyContent: "center",
                             color: "white", fontFamily: "Sora,sans-serif", fontWeight: 700, fontSize: "0.85rem",
                         }}>
                             {user?.username?.[0]?.toUpperCase()}
-                        </div>
+                        </div> */}
                         {/* Hamburger */}
+                        <Avatar user={user}/>
                         <button
                             onClick={() => setMenuOpen(v => !v)}
                             style={{
@@ -188,14 +191,15 @@ export default function UserLayout() {
                             background: "#f0f7ff", border: "1px solid #e0effe",
                             marginBottom: "0.75rem",
                         }}>
-                            <div style={{
+                            {/* <div style={{
                                 width: 34, height: 34, borderRadius: "50%", flexShrink: 0,
                                 background: "linear-gradient(135deg,#0054a0,#0c87e8)",
                                 display: "flex", alignItems: "center", justifyContent: "center",
                                 color: "white", fontFamily: "Sora,sans-serif", fontWeight: 700, fontSize: "0.9rem",
                             }}>
                                 {user?.username?.[0]?.toUpperCase()}
-                            </div>
+                            </div> */}
+                            <Avatar user={user}/>
                             <div>
                                 <div style={{ fontFamily: "DM Sans,sans-serif", fontWeight: 600, fontSize: "0.9rem", color: "#0a3c6d" }}>
                                     {user?.username}

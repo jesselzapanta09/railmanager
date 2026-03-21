@@ -1,5 +1,5 @@
 import React from "react"
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Navigate, HashRouter } from "react-router-dom"
 import { ConfigProvider, App as AntApp } from "antd"
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx"
 import ProtectedRoute from "./components/ProtectedRoute.jsx"
@@ -55,7 +55,7 @@ export default function App() {
     <ConfigProvider theme={antTheme}>
       <AntApp>
         <AuthProvider>
-          <BrowserRouter>
+          <BrowserRouter >
             <Routes>
 
               {/* Public */}
