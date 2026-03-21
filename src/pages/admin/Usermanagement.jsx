@@ -239,7 +239,8 @@ export default function UserManagement() {
                     </div>
                 </div>
 
-                <Table
+                <div className="overflow-x-auto">
+                    <Table
                     dataSource={filtered}
                     columns={columns}
                     rowKey="id"
@@ -267,6 +268,7 @@ export default function UserManagement() {
                         )
                     }}
                 />
+                </div>
             </div>
 
             <UserModal

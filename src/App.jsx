@@ -55,7 +55,9 @@ export default function App() {
     <ConfigProvider theme={antTheme}>
       <AntApp>
         <AuthProvider>
-          <BrowserRouter >
+          <BrowserRouter basename="/railmanager">
+          {/* for local */}
+          {/* <BrowserRouter> */}
             <Routes>
 
               {/* Public */}

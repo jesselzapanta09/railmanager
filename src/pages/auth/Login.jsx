@@ -146,8 +146,6 @@ export default function Login() {
               </Form.Item>
             </Form>
 
-            
-                                <p>to fix, the responsivenes, avatar wont show if log out</p>
           </div>
 
           <p style={{ textAlign:"center", marginTop:"1.5rem", color:"#677890", fontSize:"0.9rem" }}>
