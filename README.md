@@ -1,12 +1,42 @@
-# React + Vite
+# MSIT 114 - Activity 17: Improved ExpressJS API with Front-End
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is the client-side application for the RailManager system. It interacts with an ExpressJS API to manage users, authentication, and entities(train and user) with image support.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Installation & Setup
 
-## Expanding the ESLint configuration
+### Step 1: Clone the Repository
+```bash
+git clone https://github.com/jesselzapanta09/railmanager.git
+cd railmanager
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Step 2: Install Dependencies
+```bash
+npm install
+```
+
+### Step 4: Run the Development Server
+```bash
+npm run dev
+```
+
+The API should now be running at `http://localhost:3000/railmanager/`.
+
+---
+
+# System Feafure
+
+1. CRUD with image - assigned entity.
+2. User profile — Can modify user information with picture.
+3. User registration using email — Send verification link through email.
+4. Verify user using email address — Cannot log in if account is not verified.
+5. Forgot password using email — Send a reset password link through email.
+6. Log in and log out using authorization.
+
+
+
+## Author
+
+**Jessel Zapanta** — MSIT 114
