@@ -1,6 +1,6 @@
 # MSIT 114 - Activity 17: Improved ExpressJS API with Front-End
 
-This project is the client-side application for the RailManager system. It interacts with an ExpressJS API to manage users, authentication, and entities(train and user) with image support.
+This project is the **client-side** application for the RailManager system. It interacts with an ExpressJS API to manage users, authentication, and entities(train and user) with image support.
 
 ---
 
@@ -17,7 +17,7 @@ cd railmanager
 npm install
 ```
 
-### Step 4: Run the Development Server
+### Step 3: Run the Development Server
 ```bash
 npm run dev
 ```
