@@ -115,10 +115,12 @@ export default function Login() {
           </div>
 
           {unverified && (
-            <Alert
+            <div className="mb-2">
+              <Alert
               type="warning"
               showIcon
-              message="Email not verified"
+              closable
+              title="Email not verified"
               description={
                 <span>
                   Please verify your email first.{" "}
@@ -131,8 +133,8 @@ export default function Login() {
                   </button>
                 </span>
               }
-              className="mb-5 rounded-lg"
             />
+            </div>
           )}
 
           <div className="bg-white border border-blue-50 shadow-sm rounded-2xl p-8">

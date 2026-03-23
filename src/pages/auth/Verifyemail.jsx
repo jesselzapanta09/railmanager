@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
-import { Link, useSearchParams } from "react-router-dom"
+import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { Loader2, CheckCircle, XCircle } from "lucide-react"
 import { verifyEmail } from "../../services/api"
 import { Button } from "antd"
@@ -9,6 +9,7 @@ export default function VerifyEmail() {
   const [status, setStatus] = useState("loading")
   const [msg, setMsg] = useState("")
   const calledRef = useRef(false) // prevent double call in StrictMode
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (calledRef.current) return
@@ -54,9 +55,9 @@ export default function VerifyEmail() {
   }[status]
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rail-950 via-rail-900 to-rail-700 p-6">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-rail-950 via-rail-900 to-rail-700 p-6">
       <div className="bg-white rounded-2xl p-10 max-w-md w-full text-center shadow-xl">
-        
+
         {/* Icon */}
         <div
           className={`w-18 h-18 rounded-full flex items-center justify-center mx-auto mb-6 ${config.bg}`}
@@ -70,15 +71,15 @@ export default function VerifyEmail() {
 
         {/* Action Buttons */}
         {status === "success" && (
+
           <Button
             type="primary"
             size="large"
-            block
-            className="bg-gradient-to-br from-rail-700 to-rail-500 hover:opacity-90 shadow-md"
-            href="/login"
+            onClick={() => navigate("/login")}
           >
             Sign In Now
           </Button>
+
         )}
 
         {status === "error" && (
@@ -86,11 +87,12 @@ export default function VerifyEmail() {
             <Button
               type="primary"
               size="large"
-              className="w-full bg-gradient-to-br from-rail-700 to-rail-500 hover:opacity-90 shadow-md"
-              href="/login"
+              onClick={() => navigate("/login")}
             >
               Back to Login
             </Button>
+
+
             <p className="text-gray-400 text-sm">
               Need a new link? Log in and request a resend.
             </p>
