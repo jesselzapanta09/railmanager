@@ -2,14 +2,12 @@ import React, { useState, useEffect, useCallback } from "react"
 import { Table, Input, Tag, App } from "antd"
 import { getTrains, imageUrl } from "../../services/api"
 import { useAuth } from "../../context/AuthContext"
-
-const IconSearch = () => <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
-const IconTrain = () => <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M4 16c0 1.1.9 2 2 2h1v2h2v-2h6v2h2v-2h1c1.1 0 2-.9 2-2V8H4v8zm2-6h12v4H6v-4zM15 3l-1-2H10L9 3H4v2h16V3h-5z" /></svg>
-const IconInfo = () => <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" /></svg>
+import { Search, Train, Info } from "lucide-react"
 
 export default function UserDashboard() {
   const { user } = useAuth()
   const { message } = App.useApp()
+
   const [trains, setTrains] = useState([])
   const [filtered, setFiltered] = useState([])
   const [loading, setLoading] = useState(false)
@@ -21,62 +19,97 @@ export default function UserDashboard() {
       const res = await getTrains()
       setTrains(res.data.data)
       setFiltered(res.data.data)
-    } catch { message.error("Failed to load trains.") }
-    finally { setLoading(false) }
+    } catch {
+      message.error("Failed to load trains.")
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
   useEffect(() => { fetchTrains() }, [fetchTrains])
 
   useEffect(() => {
-    if (!search.trim()) { setFiltered(trains); return }
+    if (!search.trim()) {
+      setFiltered(trains)
+      return
+    }
     const q = search.toLowerCase()
-    setFiltered(trains.filter(t => t.train_name.toLowerCase().includes(q) || t.route.toLowerCase().includes(q)))
+    setFiltered(
+      trains.filter(
+        t =>
+          t.train_name.toLowerCase().includes(q) ||
+          t.route.toLowerCase().includes(q)
+      )
+    )
   }, [search, trains])
-
-  const thStyle = { fontFamily: "DM Sans,sans-serif", fontWeight: 600, color: "#677890", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.05em" }
 
   const columns = [
     {
-      title: <span style={thStyle}>#</span>, dataIndex: "id", width: 60,
-      render: id => <span style={{ background: "#e0effe", color: "#0054a0", padding: "2px 8px", borderRadius: 6, fontFamily: "JetBrains Mono,monospace", fontSize: "0.75rem", fontWeight: 600 }}>#{id}</span>
+      title: <span className="text-[11px] uppercase tracking-wide font-semibold text-gray-500">#</span>,
+      dataIndex: "id",
+      width: 60,
+      render: id => (
+        <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-md text-xs font-mono font-semibold">
+          #{id}
+        </span>
+      )
     },
     {
-      title: <span style={thStyle}>Train</span>, dataIndex: "train_name",
+      title: <span className="text-[11px] uppercase tracking-wide font-semibold text-gray-500">Train</span>,
+      dataIndex: "train_name",
       render: (name, record) => (
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div className="flex items-center gap-2.5">
           {imageUrl(record.image) ? (
             <img
-              src={imageUrl(record.image)} alt={name}
-              style={{ width: 36, height: 36, borderRadius: 8, objectFit: "cover", flexShrink: 0, border: "1px solid #eceef2" }}
+              src={imageUrl(record.image)}
+              alt={name}
+              className="w-9 h-9 rounded-lg object-cover border border-gray-200"
             />
           ) : (
-            <div style={{ width: 36, height: 36, borderRadius: 8, background: "linear-gradient(135deg,#e0effe,#b9dffd)", display: "flex", alignItems: "center", justifyContent: "center", color: "#0054a0", flexShrink: 0 }}>
-              <IconTrain />
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-blue-700">
+              <Train size={16} />
             </div>
           )}
-          <span style={{ fontFamily: "DM Sans,sans-serif", fontWeight: 600, color: "#0a3c6d" }}>{name}</span>
+          <span className="font-semibold text-blue-900">{name}</span>
         </div>
       )
     },
     {
-      title: <span style={thStyle}>Fare</span>, dataIndex: "price", width: 130,
+      title: <span className="text-[11px] uppercase tracking-wide font-semibold text-gray-500">Fare</span>,
+      dataIndex: "price",
+      width: 130,
       sorter: (a, b) => parseFloat(a.price) - parseFloat(b.price),
-      render: price => <Tag style={{ background: "#d5f5e3", color: "#1e8449", border: "none", borderRadius: 6, fontFamily: "JetBrains Mono,monospace", fontWeight: 600, fontSize: 13 }}>₱{parseFloat(price).toFixed(2)}</Tag>
+      render: price => (
+        <Tag className="!bg-green-100 !text-green-700 !border-none !rounded-md font-mono font-semibold">
+          ₱{parseFloat(price).toFixed(2)}
+        </Tag>
+      )
     },
     {
-      title: <span style={thStyle}>Route</span>, dataIndex: "route",
+      title: <span className="text-[11px] uppercase tracking-wide font-semibold text-gray-500">Route</span>,
+      dataIndex: "route",
       render: route => (
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#36a5f7", flexShrink: 0 }}></span>
-          <span style={{ color: "#536078", fontSize: "0.9rem" }}>{route}</span>
-          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#36a5f7", flexShrink: 0 }}></span>
+        <div className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
+          <span className="text-gray-600 text-sm">{route}</span>
+          <span className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
         </div>
       )
     },
     {
-      title: <span style={thStyle}>Date Added</span>, dataIndex: "created_at", width: 140,
-      render: d => <span style={{ color: "#8795aa", fontSize: "0.8rem" }}>{new Date(d).toLocaleDateString("en-PH", { year: "numeric", month: "short", day: "numeric" })}</span>
-    },
+      title: <span className="text-[11px] uppercase tracking-wide font-semibold text-gray-500">Date Added</span>,
+      dataIndex: "created_at",
+      width: 140,
+      render: d => (
+        <span className="text-gray-400 text-xs">
+          {new Date(d).toLocaleDateString("en-PH", {
+            year: "numeric",
+            month: "short",
+            day: "numeric"
+          })}
+        </span>
+      )
+    }
   ]
 
   const total = trains.length
@@ -84,65 +117,127 @@ export default function UserDashboard() {
   const maxPrice = total ? Math.max(...trains.map(t => parseFloat(t.price))).toFixed(2) : "0.00"
 
   return (
-    <div style={{ padding: "2rem", maxWidth: 1100, margin: "0 auto" }}>
+    <div className="p-6 max-w-6xl mx-auto">
 
       {/* Header */}
-      <div style={{ marginBottom: "1.75rem" }}>
-        <h1 style={{ fontFamily: "Sora,sans-serif", fontWeight: 700, fontSize: "1.6rem", color: "#0a3c6d", marginBottom: "0.25rem" }}>
-          Hello, {user?.username} 👋
-        </h1>
-        <p style={{ color: "#677890", margin: 0 }}>Browse the available train lines and fares below.</p>
+       {/* Header Card */}
+      <div className="mb-6 from-blue-50 to-indigo-50 rounded-2xl p-6 shadow-sm border border-blue-100">
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-sm font-medium text-blue-600 mb-1">
+              {new Date().getHours() < 12 ? '☀️ Good Morning' :
+                new Date().getHours() < 18 ? '🌤️ Good Afternoon' :
+                  '🌙 Good Evening'}
+            </p>
+            <h1 className="text-3xl font-bold text-blue-900 mb-2">
+              Welcome back, {user?.username}
+            </h1>
+            <p className="text-gray-600 flex items-center gap-2">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                {user?.role || 'Administrator'}
+              </span>
+              <span className="text-sm text-gray-500">
+                • {new Date().toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </span>
+            </p>
+          </div>
+
+          <div className="text-right">
+            <div className="text-4xl font-bold text-blue-900">
+              {new Date().toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+              })}
+            </div>
+            <p className="text-xs text-gray-500 mt-1">Current Time</p>
+          </div>
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-blue-200">
+          <p className="text-sm text-gray-600">
+            Here's an overview of the train fleet
+          </p>
+        </div>
       </div>
 
-      {/* Read-only notice */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", borderRadius: 10, background: "#fffbeb", border: "1px solid #fde68a", marginBottom: "1.5rem" }}>
-        <span style={{ color: "#d97706" }}><IconInfo /></span>
-        <span style={{ fontFamily: "DM Sans,sans-serif", fontSize: "0.875rem", color: "#92400e" }}>
-          You are viewing as a <strong>User</strong>. Train records are read-only. Contact an admin to make changes.
+      {/* Notice */}
+      <div className="flex items-center gap-2.5 p-3 rounded-xl bg-yellow-50 border border-yellow-200 mb-6">
+        <Info size={16} className="text-yellow-600" />
+        <span className="text-sm text-yellow-800">
+          You are viewing as a <strong>User</strong>. Train records are read-only.
+          Contact an admin to make changes.
         </span>
       </div>
 
-      {/* Summary chips */}
-      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: "1.5rem" }}>
-        {[
-          { label: `${total} Train${total !== 1 ? "s" : ""} Available`, color: "#0054a0", bg: "#e0effe" },
-          { label: `Min Fare: ₱${minPrice}`, color: "#1e8449", bg: "#d5f5e3" },
-          { label: `Max Fare: ₱${maxPrice}`, color: "#ba4a00", bg: "#fdebd0" },
-        ].map(c => (
-          <span key={c.label} style={{ padding: "6px 14px", borderRadius: 100, background: c.bg, color: c.color, fontFamily: "DM Sans,sans-serif", fontWeight: 600, fontSize: "0.825rem" }}>
-            {c.label}
-          </span>
-        ))}
+      {/* Summary Chips */}
+      <div className="flex flex-wrap gap-2.5 mb-6">
+        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+          {total} Train{total !== 1 ? "s" : ""} Available
+        </span>
+        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+          Min Fare: ₱{minPrice}
+        </span>
+        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-700">
+          Max Fare: ₱{maxPrice}
+        </span>
       </div>
 
-      {/* Table */}
-      <div style={{ background: "white", borderRadius: 16, border: "1px solid #eceef2", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+      {/* Table Card */}
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm">
         {/* Toolbar */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1.25rem 1.5rem", borderBottom: "1px solid #eceef2", flexWrap: "wrap", gap: 12 }}>
+        <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-gray-200">
           <div>
-            <span style={{ fontFamily: "Sora,sans-serif", fontWeight: 600, fontSize: "0.95rem", color: "#0a3c6d" }}>Train Lines</span>
-            <span style={{ color: "#8795aa", fontSize: "0.8rem", marginLeft: 8 }}>{filtered.length} results</span>
+            <span className="font-semibold text-blue-900">Train Lines</span>
+            <span className="ml-2 text-xs text-gray-400">
+              {filtered.length} results
+            </span>
           </div>
+
           <Input
             placeholder="Search by name or route…"
-            prefix={<span style={{ color: "#b1bac9" }}><IconSearch /></span>}
-            value={search} onChange={e => setSearch(e.target.value)} allowClear
-            style={{ width: 260, borderRadius: 10, borderColor: "#d5d9e2" }} />
+            prefix={<Search size={14} className="text-gray-400" />}
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            allowClear
+            className="w-full sm:w-64 rounded-xl"
+          />
         </div>
 
+        {/* Table */}
         <div className="overflow-x-auto">
           <Table
-            dataSource={filtered} columns={columns} rowKey="id" loading={loading}
-            pagination={{ pageSize: 10, showSizeChanger: false, showTotal: t => <span style={{ color: "#8795aa", fontSize: "0.875rem" }}>{t} trains total</span>, style: { padding: "16px 24px" } }}
-            style={{ borderRadius: "0 0 16px 16px" }}
+            dataSource={filtered}
+            columns={columns}
+            rowKey="id"
+            loading={loading}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: false,
+              showTotal: t => (
+                <span className="text-gray-400 text-sm">
+                  {t} trains total
+                </span>
+              ),
+              className: "px-4 py-3"
+            }}
             locale={{
               emptyText: (
-                <div style={{ padding: "3rem 0", textAlign: "center" }}>
-                  <div style={{ width: 52, height: 52, borderRadius: 14, background: "#e0effe", color: "#0054a0", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1rem" }}>
-                    <svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M4 16c0 1.1.9 2 2 2h1v2h2v-2h6v2h2v-2h1c1.1 0 2-.9 2-2V8H4v8zm2-6h12v4H6v-4zM15 3l-1-2H10L9 3H4v2h16V3h-5z" /></svg>
+                <div className="py-12 text-center">
+                  <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-blue-100 flex items-center justify-center text-blue-700">
+                    <Train size={24} />
                   </div>
-                  <p style={{ fontFamily: "Sora,sans-serif", fontWeight: 600, color: "#444f62", margin: 0 }}>No trains found</p>
-                  <p style={{ color: "#8795aa", fontSize: "0.875rem", marginTop: 4 }}>Try a different search term.</p>
+                  <p className="font-semibold text-gray-700">
+                    No trains found
+                  </p>
+                  <p className="text-sm text-gray-400 mt-1">
+                    Try a different search term.
+                  </p>
                 </div>
               )
             }}

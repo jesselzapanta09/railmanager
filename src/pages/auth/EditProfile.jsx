@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"
 import { updateProfile, changePassword, imageUrl } from "../../services/api"
 import { useAuth } from "../../context/AuthContext"
 import Avatar from "../../components/Avatar"
+import { Upload as UploadIcon } from "lucide-react"
 
 export default function EditProfile() {
   const { message } = App.useApp()
@@ -16,8 +17,8 @@ export default function EditProfile() {
   const [passForm] = Form.useForm()
 
   // Avatar state
-  const [avatarFile, setAvatarFile] = useState(null)    // File to upload
-  const [avatarPreview, setAvatarPreview] = useState(imageUrl(user?.avatar)) // preview URL
+  const [avatarFile, setAvatarFile] = useState(null)
+  const [avatarPreview, setAvatarPreview] = useState(imageUrl(user?.avatar))
   const [removeAvatar, setRemoveAvatar] = useState(false)
 
   const handleAvatarChange = (file) => {
@@ -29,7 +30,7 @@ export default function EditProfile() {
     reader.readAsDataURL(file)
     setAvatarFile(file)
     setRemoveAvatar(false)
-    return false  // prevent auto-upload
+    return false
   }
 
   const handleRemoveAvatar = () => {
@@ -48,7 +49,6 @@ export default function EditProfile() {
       const res = await updateProfile(payload)
 
       if (res.data.emailChanged) {
-        // Must re-verify new email — log them out
         message.warning(
           "Email changed! A verification link has been sent to your new address. You will be logged out now.",
           5
@@ -84,108 +84,138 @@ export default function EditProfile() {
   }
 
   const dashPath = user?.role === "admin" ? "/admin/dashboard" : "/user/dashboard"
-  const labelStyle = { fontFamily: "DM Sans,sans-serif", fontWeight: 500, color: "#3b4453" }
-  const inputStyle = { borderRadius: 10, borderColor: "#d5d9e2" }
-  const btnPrimary = { height: 46, borderRadius: 10, fontFamily: "DM Sans,sans-serif", fontWeight: 600, border: "none", color: "white", background: "linear-gradient(135deg,#0054a0,#0c87e8)", boxShadow: "0 4px 12px rgba(12,135,232,0.28)" }
-  const btnCancel = { height: 46, borderRadius: 10, fontFamily: "DM Sans,sans-serif", fontWeight: 500, borderColor: "#d5d9e2", color: "#677890" }
+
+  // Tailwind reusable style constants
+  const labelClass = "font-medium text-gray-700"
+  const inputClass = "rounded-xl border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none w-full"
+  const btnPrimary = "h-12 rounded-xl font-semibold text-white bg-gradient-to-tr from-blue-800 to-blue-600 shadow-md hover:from-blue-700 hover:to-blue-500"
+  const btnSecondary = "h-12 rounded-xl font-medium text-gray-600 border border-gray-300 hover:bg-gray-50"
 
   return (
-    <div style={{ padding: "2rem", maxWidth: 580, margin: "0 auto" }}>
-      <div style={{ marginBottom: "2rem" }}>
-        <h1 style={{ fontFamily: "Sora,sans-serif", fontWeight: 700, fontSize: "1.6rem", color: "#0a3c6d", marginBottom: "0.25rem" }}>Edit Profile</h1>
-        <p style={{ color: "#677890", margin: 0 }}>Manage your account information and security.</p>
+    <div className="p-6 max-w-2xl mx-auto">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-blue-900 mb-1">Edit Profile</h1>
+        <p className="text-gray-500">Manage your account information and security.</p>
       </div>
 
-      {/* Avatar card */}
-      <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "1.25rem 1.5rem", borderRadius: 14, background: "white", border: "1px solid #eceef2", boxShadow: "0 1px 3px rgba(0,0,0,0.05)", marginBottom: "1.5rem" }}>
-        <Avatar user={{ ...user, avatar: removeAvatar ? null : (avatarFile ? null : user?.avatar) }}
-          size={64} fontSize="1.4rem"
-          style={avatarPreview && !removeAvatar ? { display: "none" } : {}} />
-        {avatarPreview && !removeAvatar && (
-          <img src={avatarPreview} alt="preview"
-            style={{ width: 64, height: 64, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: "2px solid #e0effe" }} />
+      {/* Avatar Card */}
+      <div className="flex items-center gap-4 p-4 rounded-xl bg-white border border-gray-200 shadow mb-6">
+        {avatarPreview && !removeAvatar ? (
+          <img src={avatarPreview} alt="preview" className="w-16 h-16 rounded-full object-cover border-2 border-blue-100 flex-shrink-0" />
+        ) : (
+          <Avatar user={removeAvatar ? { username: user?.username } : user} size={64} fontSize="1.4rem" />
         )}
         <div>
-          <div style={{ fontFamily: "Sora,sans-serif", fontWeight: 700, fontSize: "1.1rem", color: "#0a3c6d" }}>{user?.username}</div>
-          <div style={{ color: "#677890", fontSize: "0.875rem", marginTop: 2 }}>{user?.email}</div>
-          <div style={{ display: "inline-block", marginTop: 6, padding: "2px 10px", borderRadius: 100, background: user?.role === "admin" ? "#e0effe" : "#d5f5e3", color: user?.role === "admin" ? "#0054a0" : "#1e8449", fontSize: "0.72rem", fontFamily: "JetBrains Mono,monospace", fontWeight: 600 }}>
+          <div className="font-bold text-lg text-blue-900">{user?.username}</div>
+          <div className="text-gray-500 text-sm mt-0.5">{user?.email}</div>
+          <div className={`inline-block mt-1 px-3 py-0.5 rounded-full text-xs font-mono font-semibold ${user?.role === "admin" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"}`}>
             {user?.role?.toUpperCase()}
           </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div style={{ background: "white", borderRadius: 16, border: "1px solid #eceef2", boxShadow: "0 1px 3px rgba(0,0,0,0.05)", overflow: "hidden" }}>
-        <Tabs defaultActiveKey="profile" style={{ padding: "0 1.5rem" }} items={[
-          {
-            key: "profile",
-            label: <span style={{ fontFamily: "DM Sans,sans-serif", fontWeight: 500 }}>Profile Info</span>,
-            children: (
-              <div style={{ padding: "0 0 1.5rem" }}>
-                <Form form={profileForm} layout="vertical" onFinish={handleProfileSave}
-                  requiredMark={false} size="large"
-                  initialValues={{ username: user?.username || "", email: user?.email || "" }}>
-
-                  {/* Avatar upload */}
-                  <Form.Item label={<span style={labelStyle}>Profile Photo</span>}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      {/* mini preview */}
-                      {avatarPreview && !removeAvatar ? (
-                        <img src={avatarPreview} alt="preview"
-                          style={{ width: 48, height: 48, borderRadius: "50%", objectFit: "cover", border: "1px solid #e0effe" }} />
-                      ) : (
-                        <Avatar user={removeAvatar ? { username: user?.username } : user} size={48} fontSize="1.1rem" />
-                      )}
+      <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow overflow-hidden">
+        <Tabs
+          defaultActiveKey="profile"
+          className="p-6"
+          items={[
+            {
+              key: "profile",
+              label: <span className="font-medium">Profile Info</span>,
+              children: (
+                <Form
+                  form={profileForm}
+                  layout="vertical"
+                  onFinish={handleProfileSave}
+                  initialValues={{ username: user?.username || "", email: user?.email || "" }}
+                  requiredMark={false}
+                  size="large"
+                  className="space-y-4"
+                >
+                  {/* Avatar Upload */}
+                  <Form.Item label={<span className={labelClass}>Profile Photo</span>}>
+                    <div className="flex items-center gap-3">
                       <Upload beforeUpload={handleAvatarChange} showUploadList={false} accept=".jpg,.jpeg,.png,.webp">
-                        <Button style={{ borderRadius: 9, borderColor: "#d5d9e2", fontFamily: "DM Sans,sans-serif", fontSize: "0.875rem" }}>
-                          Change photo
+                        <Button icon={<UploadIcon size={16} />} className="rounded-lg border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50">
+                          Change Photo
                         </Button>
                       </Upload>
                       {(avatarPreview || user?.avatar) && !removeAvatar && (
-                        <button type="button" onClick={handleRemoveAvatar}
-                          style={{ background: "none", border: "none", color: "#e74c3c", cursor: "pointer", fontSize: "0.825rem", fontFamily: "DM Sans,sans-serif", padding: 0 }}>
+                        <button
+                          type="button"
+                          onClick={handleRemoveAvatar}
+                          className="text-red-600 text-sm hover:underline"
+                        >
                           Remove
                         </button>
                       )}
+                      {avatarPreview && !removeAvatar && (
+                        <img src={avatarPreview} alt="preview" className="w-12 h-12 rounded-full object-cover border border-blue-100" />
+                      )}
                     </div>
-                    <p style={{ color: "#8795aa", fontSize: "0.75rem", margin: "6px 0 0" }}>JPG, PNG, WebP · max 5MB</p>
+                    <p className="text-xs text-gray-400 mt-1">JPG, PNG, WebP · max 5MB</p>
                   </Form.Item>
 
-                  <Form.Item name="username" label={<span style={labelStyle}>Username</span>}
-                    rules={[{ required: true, message: "Username is required" }, { min: 3, message: "At least 3 characters" }]}>
-                    <Input placeholder="e.g. railadmin" style={inputStyle} />
+                  <Form.Item
+                    name="username"
+                    label={<span className={labelClass}>Username</span>}
+                    rules={[{ required: true, message: "Username is required" }, { min: 3, message: "At least 3 characters" }]}
+                  >
+                    <Input placeholder="e.g. railadmin" className={inputClass} />
                   </Form.Item>
 
-                  <Form.Item name="email" label={<span style={labelStyle}>Email address</span>}
-                    rules={[{ required: true, message: "Email is required" }, { type: "email", message: "Enter a valid email" }]}>
-                    <Input placeholder="you@example.com" style={inputStyle} />
+                  <Form.Item
+                    name="email"
+                    label={<span className={labelClass}>Email address</span>}
+                    rules={[{ required: true, message: "Email is required" }, { type: "email", message: "Enter a valid email" }]}
+                  >
+                    <Input placeholder="you@example.com" className={inputClass} />
                   </Form.Item>
 
-                  <div style={{ display: "flex", gap: 12 }}>
-                    <Button onClick={() => navigate(dashPath)} style={btnCancel} block>Cancel</Button>
-                    <Button htmlType="submit" loading={profileLoading} style={btnPrimary} block>
+                  <div className="flex gap-3">
+                    <Button onClick={() => navigate(dashPath)} className={btnSecondary} block>
+                      Cancel
+                    </Button>
+                    <Button type="primary" htmlType="submit" loading={profileLoading} className={btnPrimary} block>
                       {profileLoading ? "Saving…" : "Save Changes"}
                     </Button>
                   </div>
                 </Form>
-              </div>
-            ),
-          },
-          {
-            key: "password",
-            label: <span style={{ fontFamily: "DM Sans,sans-serif", fontWeight: 500 }}>Password</span>,
-            children: (
-              <div style={{ padding: "0 0 1.5rem" }}>
-                <Form form={passForm} layout="vertical" onFinish={handlePasswordSave} requiredMark={false} size="large">
-                  <Form.Item name="currentPassword" label={<span style={labelStyle}>Current password</span>}
-                    rules={[{ required: true, message: "Current password is required" }]}>
-                    <Input.Password placeholder="••••••••" style={inputStyle} />
+              ),
+            },
+            {
+              key: "password",
+              label: <span className="font-medium">Password</span>,
+              children: (
+                <Form
+                  form={passForm}
+                  layout="vertical"
+                  onFinish={handlePasswordSave}
+                  requiredMark={false}
+                  size="large"
+                  className="space-y-4"
+                >
+                  <Form.Item
+                    name="currentPassword"
+                    label={<span className={labelClass}>Current password</span>}
+                    rules={[{ required: true, message: "Current password is required" }]}
+                  >
+                    <Input.Password placeholder="••••••••" className={inputClass} />
                   </Form.Item>
-                  <Form.Item name="newPassword" label={<span style={labelStyle}>New password</span>}
-                    rules={[{ required: true, message: "New password is required" }, { min: 6, message: "At least 6 characters" }]}>
-                    <Input.Password placeholder="••••••••" style={inputStyle} />
+
+                  <Form.Item
+                    name="newPassword"
+                    label={<span className={labelClass}>New password</span>}
+                    rules={[{ required: true, message: "New password is required" }, { min: 6, message: "At least 6 characters" }]}
+                  >
+                    <Input.Password placeholder="••••••••" className={inputClass} />
                   </Form.Item>
-                  <Form.Item name="confirmPassword" label={<span style={labelStyle}>Confirm new password</span>}
+
+                  <Form.Item
+                    name="confirmPassword"
+                    label={<span className={labelClass}>Confirm new password</span>}
                     dependencies={["newPassword"]}
                     rules={[
                       { required: true, message: "Please confirm your password" },
@@ -195,20 +225,24 @@ export default function EditProfile() {
                           return Promise.reject(new Error("Passwords do not match"))
                         },
                       }),
-                    ]}>
-                    <Input.Password placeholder="••••••••" style={inputStyle} />
+                    ]}
+                  >
+                    <Input.Password placeholder="••••••••" className={inputClass} />
                   </Form.Item>
-                  <div style={{ display: "flex", gap: 12, marginTop: "0.5rem" }}>
-                    <Button onClick={() => passForm.resetFields()} style={btnCancel} block>Clear</Button>
-                    <Button htmlType="submit" loading={passLoading} style={btnPrimary} block>
+
+                  <div className="flex gap-3 mt-2">
+                    <Button onClick={() => passForm.resetFields()} className={btnSecondary} block>
+                      Clear
+                    </Button>
+                    <Button type="primary" htmlType="submit" loading={passLoading} className={btnPrimary} block>
                       {passLoading ? "Updating…" : "Update Password"}
                     </Button>
                   </div>
                 </Form>
-              </div>
-            ),
-          },
-        ]} />
+              ),
+            },
+          ]}
+        />
       </div>
     </div>
   )

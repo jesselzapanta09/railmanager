@@ -63,7 +63,6 @@ export default function App() {
               {/* Public */}
               <Route element={<HomeLayout />}>
                 <Route path="/"         element={<Home />} />
-                <Route path="/features" element={<Home />} />
               </Route>
 
               {/* Auth pages */}

@@ -1,29 +1,30 @@
 import React, { useState, useEffect } from "react"
-import { Form, Input, Button, App, Alert } from "antd"
+import { Form, Input, App, Alert } from "antd"
 import { Link, useNavigate } from "react-router-dom"
-import { login, resendVerification } from "../../services/api"
 import { useAuth } from "../../context/AuthContext"
+import { Loader2, MapPin, Activity, Train } from "lucide-react" // icons for stats
+import { login, resendVerification } from "../../services/api"
 
 function useIsDesktop() {
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024)
   useEffect(() => {
-    const h = () => setIsDesktop(window.innerWidth >= 1024)
-    window.addEventListener("resize", h)
-    return () => window.removeEventListener("resize", h)
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1024)
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
   }, [])
   return isDesktop
 }
 
 export default function Login() {
-  const { message }                            = App.useApp()
-  const isDesktop                              = useIsDesktop()
-  const [loading,        setLoading]           = useState(false)
-  const [unverified,     setUnverified]        = useState(false)
-  const [unverifiedEmail,setUnverifiedEmail]   = useState("")
-  const [resending,      setResending]         = useState(false)
-  const { loginUser }                          = useAuth()
-  const navigate                               = useNavigate()
-  const [form]                                 = Form.useForm()
+  const { message } = App.useApp()
+  const isDesktop = useIsDesktop()
+  const [loading, setLoading] = useState(false)
+  const [unverified, setUnverified] = useState(false)
+  const [unverifiedEmail, setUnverifiedEmail] = useState("")
+  const [resending, setResending] = useState(false)
+  const { loginUser } = useAuth()
+  const navigate = useNavigate()
+  const [form] = Form.useForm()
 
   const onFinish = async (values) => {
     setLoading(true)
@@ -60,97 +61,125 @@ export default function Login() {
     }
   }
 
-  return (
-    <div style={{ minHeight:"100vh", display:"flex" }}>
+  const stats = [
+    { label: "Routes", value: "50+", icon: <MapPin className="w-5 h-5 text-sky-300" /> },
+    { label: "Uptime", value: "99.9%", icon: <Activity className="w-5 h-5 text-sky-300" /> },
+    { label: "Trains", value: "120+", icon: <Train className="w-5 h-5 text-sky-300" /> },
+  ]
 
-      {/* Left panel — desktop only */}
+  return (
+    <div className="min-h-screen flex flex-col lg:flex-row">
+
+      {/* Left panel */}
       {isDesktop && (
-        <div style={{
-          width:"45%", padding:"8rem 3.5rem 3.5rem",
-          background:"linear-gradient(145deg,#072649 0%,#0054a0 60%,#006ac6 100%)",
-          display:"flex", flexDirection:"column", justifyContent:"space-between",
-        }}>
-          <div>
-            <div style={{ display:"inline-flex", alignItems:"center", gap:8, padding:"5px 14px", borderRadius:100, marginBottom:"2rem", background:"rgba(255,255,255,0.10)", border:"1px solid rgba(255,255,255,0.15)" }}>
-              <span style={{ width:7, height:7, borderRadius:"50%", background:"#4ade80", display:"inline-block" }}></span>
-              <span style={{ color:"#7cc4fb", fontSize:"0.78rem", fontFamily:"JetBrains Mono,monospace", fontWeight:500 }}>SYSTEM ONLINE</span>
+        <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-20 relative overflow-hidden bg-gradient-to-br from-rail-950 via-rail-900 to-rail-700">
+          {/* Decorative shapes */}
+          <span className="absolute top-10 left-10 w-24 h-24 rounded-full bg-white/5 animate-pulse-slow" />
+          <span className="absolute bottom-20 right-16 w-32 h-32 rounded-full bg-white/10" />
+
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full mb-8 bg-white/10 border border-white/15">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-xs font-mono font-medium text-sky-300">SYSTEM ONLINE</span>
             </div>
-            <h2 style={{ fontFamily:"Sora,sans-serif", fontWeight:700, color:"white", fontSize:"2.2rem", lineHeight:1.25, marginBottom:"1rem" }}>
-              Welcome<br /><span style={{ color:"#7cc4fb" }}>back.</span>
+            <h2 className="font-display text-white text-4xl font-bold mb-3">
+              Welcome <br />
+              <span className="text-sky-300">back.</span>
             </h2>
-            <p style={{ color:"#bfdbfe", fontSize:"1rem", lineHeight:1.75, maxWidth:300, opacity:0.85 }}>
+            <p className="text-blue-200 max-w-xs leading-relaxed opacity-80 mb-8">
               Sign in to access your train fleet dashboard.
             </p>
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12 }}>
-            {[{ label:"Routes", value:"50+" }, { label:"Uptime", value:"99.9%" }, { label:"Trains", value:"120+" }].map(s => (
-              <div key={s.label} style={{ borderRadius:12, padding:"1rem", background:"rgba(255,255,255,0.07)", border:"1px solid rgba(255,255,255,0.1)" }}>
-                <div style={{ fontFamily:"Sora,sans-serif", fontWeight:700, color:"white", fontSize:"1.4rem" }}>{s.value}</div>
-                <div style={{ color:"#93c5fd", fontSize:"0.8rem", marginTop:3 }}>{s.label}</div>
+
+          <div className="relative z-10 grid grid-cols-3 gap-6">
+            {stats.map((stat) => (
+              <div
+                key={stat.label}
+                className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center gap-1 hover:scale-105 transition-transform"
+              >
+                {stat.icon}
+                <span className="font-display font-bold text-white text-xl">{stat.value}</span>
+                <span className="text-xs text-sky-300">{stat.label}</span>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Right form panel */}
-      <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", padding:"2rem", background:"#f6f7f9" }}>
-        <div style={{ width:"100%", maxWidth:420 }}>
-
-          <div style={{ marginBottom:"2rem" }}>
-            <h2 style={{ fontFamily:"Sora,sans-serif", fontWeight:700, fontSize:"1.9rem", color:"#0a3c6d", marginBottom:"0.35rem" }}>Sign in</h2>
-            <p style={{ color:"#677890", margin:0 }}>Enter your credentials to continue.</p>
+      {/* Right panel */}
+      <div className="flex-1 flex items-center justify-center p-8 bg-gray-50">
+        <div className="w-full max-w-md">
+          <div className="mb-8">
+            <h2 className="font-display font-bold text-2xl text-rail-900 mb-1">Sign in</h2>
+            <p className="text-gray-500 text-sm">Enter your credentials to continue.</p>
           </div>
 
-          {/* Unverified email banner — stays persistent since it needs a resend action */}
           {unverified && (
-            <Alert type="warning" showIcon message="Email not verified"
+            <Alert
+              type="warning"
+              showIcon
+              message="Email not verified"
               description={
                 <span>
                   Please verify your email first.{" "}
-                  <button onClick={handleResend} disabled={resending}
-                    style={{ background:"none", border:"none", color:"#d97706", fontWeight:600, cursor:"pointer", padding:0, textDecoration:"underline" }}>
+                  <button
+                    onClick={handleResend}
+                    disabled={resending}
+                    className="text-orange-600 font-semibold underline disabled:opacity-50"
+                  >
                     {resending ? "Sending…" : "Resend verification email"}
                   </button>
                 </span>
               }
-              style={{ marginBottom:"1.25rem", borderRadius:10 }} />
+              className="mb-5 rounded-lg"
+            />
           )}
 
-          <div style={{ background:"white", borderRadius:16, padding:"2rem", border:"1px solid #e0effe", boxShadow:"0 1px 3px rgba(0,0,0,0.06),0 4px 16px rgba(0,0,0,0.06)" }}>
+          <div className="bg-white border border-blue-50 shadow-sm rounded-2xl p-8">
             <Form form={form} layout="vertical" onFinish={onFinish} requiredMark={false} size="large">
-
-              <Form.Item name="email"
-                label={<span style={{ fontFamily:"DM Sans,sans-serif", fontWeight:500, color:"#3b4453" }}>Email address</span>}
-                rules={[{ required:true, message:"Email is required" }, { type:"email", message:"Enter a valid email" }]}>
-                <Input placeholder="you@example.com" style={{ borderRadius:10, borderColor:"#d5d9e2" }} />
+              <Form.Item
+                name="email"
+                label={<span className="font-medium text-gray-700">Email address</span>}
+                rules={[
+                  { required: true, message: "Email is required" },
+                  { type: "email", message: "Enter a valid email" },
+                ]}
+              >
+                <Input placeholder="you@example.com" className="rounded-lg border-gray-300" />
               </Form.Item>
 
-              <Form.Item name="password"
-                label={<span style={{ fontFamily:"DM Sans,sans-serif", fontWeight:500, color:"#3b4453" }}>Password</span>}
-                rules={[{ required:true, message:"Password is required" }]}>
-                <Input.Password placeholder="••••••••" style={{ borderRadius:10, borderColor:"#d5d9e2" }} />
+              <Form.Item
+                name="password"
+                label={<span className="font-medium text-gray-700">Password</span>}
+                rules={[{ required: true, message: "Password is required" }]}
+              >
+                <Input.Password placeholder="••••••••" className="rounded-lg border-gray-300" />
               </Form.Item>
 
-              <div style={{ textAlign:"right", marginTop:"-0.5rem", marginBottom:"1rem" }}>
-                <Link to="/forgot-password" style={{ color:"#006ac6", fontSize:"0.85rem", fontWeight:500 }}>
+              <div className="text-right -mt-2 mb-4">
+                <Link to="/forgot-password" className="text-blue-600 text-xs font-medium">
                   Forgot password?
                 </Link>
               </div>
 
-              <Form.Item style={{ marginBottom:0 }}>
-                <Button htmlType="submit" loading={loading} block
-                  style={{ height:48, borderRadius:10, fontFamily:"DM Sans,sans-serif", fontWeight:600, fontSize:15, border:"none", color:"white", background:"linear-gradient(135deg,#0054a0,#0c87e8)", boxShadow:"0 4px 14px rgba(12,135,232,0.35)" }}>
+              <Form.Item className="mb-0">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="h-12 w-full cursor-pointer rounded-lg bg-gradient-to-br from-rail-700 to-rail-500 text-white font-semibold shadow-md hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {loading && <Loader2 className="animate-spin w-5 h-5" />}
                   {loading ? "Signing in…" : "Sign in to Dashboard"}
-                </Button>
+                </button>
               </Form.Item>
             </Form>
-
           </div>
 
-          <p style={{ textAlign:"center", marginTop:"1.5rem", color:"#677890", fontSize:"0.9rem" }}>
+          <p className="text-center text-gray-500 mt-6 text-sm">
             Don't have an account?{" "}
-            <Link to="/register" style={{ color:"#006ac6", fontWeight:600 }}>Create one</Link>
+            <Link to="/register" className="text-blue-600 font-semibold">
+              Create one
+            </Link>
           </p>
         </div>
       </div>

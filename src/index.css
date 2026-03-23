@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* ── Tailwind v4: custom theme defined here in CSS (no tailwind.config.js) ── */
+/* ── Custom Theme ── */
 @theme {
   --font-display: 'Sora', sans-serif;
   --font-body:    'DM Sans', sans-serif;
@@ -23,40 +23,14 @@
   --animate-pulse-dot: pulseDot 2s infinite;
 }
 
-@keyframes fadeIn  { from { opacity: 0 } to { opacity: 1 } }
-@keyframes slideUp { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: translateY(0) } }
-@keyframes pulseDot { 0%, 100% { opacity: 1 } 50% { opacity: 0.3 } }
-
-/* ── Base ── */
-*, *::before, *::after { box-sizing: border-box; }
-
+/* Base styles */
 body {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-body);
+  margin: 0;
+  color: #000;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  margin: 0;
 }
 
-/* ── Ant Design v6 overrides ── */
-.ant-table-thead > tr > th {
-  background: #f6f7f9 !important;
-  border-bottom: 1px solid #eceef2 !important;
-  padding: 12px 16px !important;
-}
-.ant-table-tbody > tr > td {
-  padding: 14px 16px !important;
-  border-bottom: 1px solid #f0f1f3 !important;
-}
-.ant-table-tbody > tr:last-child > td { border-bottom: none !important; }
-.ant-table-tbody > tr:hover > td { background: #f8fbff !important; }
-
-.ant-btn       { font-family: 'DM Sans', sans-serif !important; }
-.ant-input,
-.ant-input-affix-wrapper,
-.ant-input-number { font-family: 'DM Sans', sans-serif !important; font-size: 14px !important; }
-.ant-form-item-label > label { font-family: 'DM Sans', sans-serif !important; }
-.ant-message-notice-content  { border-radius: 12px !important; font-family: 'DM Sans', sans-serif !important; }
-.ant-modal-content           { box-shadow: 0 20px 60px rgba(0,0,0,0.18) !important; }
-.ant-popover-inner           { border-radius: 12px !important; }
-.ant-pagination-item-active  { border-color: #0054a0 !important; }
-.ant-pagination-item-active a { color: #0054a0 !important; }
+/* Utility override for text-white */
+.text-white { color: #fff !important; }

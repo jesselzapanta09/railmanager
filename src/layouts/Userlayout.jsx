@@ -62,7 +62,7 @@ export default function UserLayout() {
             }}>
 
                 {/* Logo */}
-                <Link to="/user/dashboard"
+                <Link to="/"
                     style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
                     <div style={{
                         width: 34, height: 34, borderRadius: 9,

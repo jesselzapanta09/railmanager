@@ -1,62 +1,31 @@
 import React from "react"
-import { Outlet, Link, Navigate } from "react-router-dom"
+import { Outlet, Navigate, Link } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
-
-const TrainIcon = () => (
-    <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
-        <path d="M4 16c0 1.1.9 2 2 2h1v2h2v-2h6v2h2v-2h1c1.1 0 2-.9 2-2V8H4v8zm2-6h12v4H6v-4zM15 3l-1-2H10L9 3H4v2h16V3h-5z" />
-    </svg>
-)
+import { Train } from "lucide-react"
 
 export default function AuthLayout() {
     const { isAuthenticated } = useAuth()
 
-    // Already logged in — send to dashboard
+    // Already logged in — redirect to dashboard
     if (isAuthenticated) return <Navigate to="/dashboard" replace />
 
     return (
-        <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+        <div className="min-h-screen flex flex-col bg-gradient-to-br from-rail-950 to-rail-700">
 
-            {/* ── Minimal auth nav ───────────────────────────────────── */}
-            <nav style={{
-                position: "absolute", top: 0, left: 0, right: 0, zIndex: 50,
-                padding: "1.25rem 2rem",
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-            }}>
-                {/* Logo — back to home */}
-                <Link to="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 9 }}>
-                    <div style={{
-                        width: 34, height: 34, borderRadius: 9,
-                        background: "rgba(255,255,255,0.15)",
-                        display: "flex", alignItems: "center", justifyContent: "center", color: "white",
-                    }}>
-                        <TrainIcon />
+            {/* ── Navbar ───────────────────────────── */}
+            <nav className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-6 sm:px-10 py-4">
+                {/* Logo */}
+                <Link to="/" className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-rail-700/80 text-white shadow-sm">
+                        <Train size={20} />
                     </div>
-                    <span style={{ fontFamily: "Sora,sans-serif", fontWeight: 700, fontSize: "1.05rem", color: "white" }}>
+                    <span className="font-display font-bold text-rail-100 text-lg">
                         RailManager
                     </span>
                 </Link>
-
-                {/* Back to home link */}
-                <Link to="/"
-                    style={{
-                        display: "flex", alignItems: "center", gap: 6,
-                        color: "rgba(255,255,255,0.75)", fontFamily: "DM Sans,sans-serif",
-                        fontWeight: 500, fontSize: "0.875rem", textDecoration: "none",
-                        padding: "7px 14px", borderRadius: 8,
-                        border: "1px solid rgba(255,255,255,0.2)",
-                        transition: "all 0.2s",
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.color = "white"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)" }}
-                    onMouseLeave={e => { e.currentTarget.style.color = "rgba(255,255,255,0.75)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)" }}>
-                    <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
-                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
-                    </svg>
-                    Back to home
-                </Link>
             </nav>
 
-            {/* ── Auth page content (Login or Register) ──────────────── */}
+            {/* ── Auth page content ────────────────── */}
             <Outlet />
         </div>
     )

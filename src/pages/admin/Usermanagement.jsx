@@ -1,18 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react"
-import { Table, Button, Popconfirm, Input, Tag, Tooltip, App, Badge } from "antd"
+import { Table, Button, Popconfirm, Input, Tag, Tooltip, App } from "antd"
+import { Plus, Edit, Trash2, Search, User } from "lucide-react"
 import { getUsers, createUser, updateUser, deleteUser } from "../../services/api"
-// import { useAuth } from "../../context/AuthContext"
 import UserModal from "../../components/Usermodal"
 import Avatar from "../../components/Avatar"
 
-const IconPlus = () => <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" /></svg>
-const IconEdit = () => <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" /></svg>
-const IconDelete = () => <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
-const IconSearch = () => <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
-
 export default function UserManagement() {
     const { message } = App.useApp()
-    // const { user: me } = useAuth()
 
     const [users, setUsers] = useState([])
     const [filtered, setFiltered] = useState([])
@@ -39,7 +33,7 @@ export default function UserManagement() {
     useEffect(() => { fetchUsers() }, [fetchUsers])
 
     useEffect(() => {
-        if (!search.trim()) { setFiltered(users); return }
+        if (!search.trim()) return setFiltered(users)
         const q = search.toLowerCase()
         setFiltered(users.filter(u =>
             u.username.toLowerCase().includes(q) ||
@@ -49,9 +43,9 @@ export default function UserManagement() {
     }, [search, users])
 
     const openAdd = () => { setModalMode("add"); setEditRecord(null); setModalOpen(true) }
-    const openEdit = (r) => { setModalMode("edit"); setEditRecord(r); setModalOpen(true) }
+    const openEdit = r => { setModalMode("edit"); setEditRecord(r); setModalOpen(true) }
 
-    const handleSubmit = async (values) => {
+    const handleSubmit = async values => {
         setSubmitLoading(true)
         try {
             if (modalMode === "add") {
@@ -61,7 +55,7 @@ export default function UserManagement() {
                 const emailChanged = values.email && values.email !== editRecord.email
                 await updateUser(editRecord.id, values)
                 if (emailChanged) {
-                    message.warning("Email changed — user's email_verified_at has been reset. They must re-verify before logging in.")
+                    message.warning("Email changed — user's email_verified_at has been reset.")
                 } else {
                     message.success("User updated successfully!")
                 }
@@ -75,7 +69,7 @@ export default function UserManagement() {
         }
     }
 
-    const handleDelete = async (id) => {
+    const handleDelete = async id => {
         try {
             await deleteUser(id)
             message.success("User deleted.")
@@ -85,93 +79,96 @@ export default function UserManagement() {
         }
     }
 
-    const thStyle = { fontFamily: "DM Sans,sans-serif", fontWeight: 600, color: "#677890", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.05em" }
+    const totalAdmins = users.filter(u => u.role === "admin").length
+    const totalUsers = users.filter(u => u.role === "user").length
+    const unverified = users.filter(u => !u.email_verified_at).length
 
     const columns = [
         {
-            title: <span style={thStyle}>ID</span>,
-            dataIndex: "id", width: 64,
+            title: "ID",
+            dataIndex: "id",
+            width: 64,
+            sorter: (a, b) => parseFloat(a.id) - parseFloat(b.id),
             render: id => (
-                <span style={{ background: "#e0effe", color: "#0054a0", padding: "2px 8px", borderRadius: 6, fontFamily: "JetBrains Mono,monospace", fontSize: "0.75rem", fontWeight: 600 }}>
+                <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-mono text-xs font-semibold">
                     #{id}
                 </span>
             )
         },
         {
-            title: <span style={thStyle}>User</span>,
+            title: "User",
             dataIndex: "username",
             render: (username, record) => (
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div className="flex items-center gap-3">
                     <Avatar user={record} size={34} fontSize="0.85rem" />
                     <div>
-                        <div style={{ fontFamily: "DM Sans,sans-serif", fontWeight: 600, color: "#0a3c6d", fontSize: "0.9rem" }}>
-                            {username}
-                        </div>
-                        <div style={{ color: "#8795aa", fontSize: "0.78rem" }}>{record.email}</div>
+                        <div className="font-semibold text-blue-900 text-sm">{username}</div>
+                        <div className="text-gray-400 text-xs">{record.email}</div>
                     </div>
                 </div>
             )
         },
         {
-            title: <span style={thStyle}>Role</span>,
-            dataIndex: "role", width: 100,
+            title: "Role",
+            dataIndex: "role",
+            width: 100,
             filters: [{ text: "Admin", value: "admin" }, { text: "User", value: "user" }],
             onFilter: (value, record) => record.role === value,
             render: role => (
-                <Tag style={{
-                    background: role === "admin" ? "#e0effe" : "#d5f5e3",
-                    color: role === "admin" ? "#0054a0" : "#1e8449",
-                    border: "none", borderRadius: 6,
-                    fontFamily: "JetBrains Mono,monospace", fontWeight: 600, fontSize: 12,
-                }}>
+                <Tag
+                    className="rounded-md font-mono font-semibold text-xs border-none"
+                    color={role === "admin" ? "blue" : "green"}
+                >
                     {role.toUpperCase()}
                 </Tag>
             )
         },
         {
-            title: <span style={thStyle}>Email Verified</span>,
-            dataIndex: "email_verified_at", width: 150,
+            title: "Email Verified",
+            dataIndex: "email_verified_at",
+            width: 150,
             filters: [{ text: "Verified", value: "yes" }, { text: "Not Verified", value: "no" }],
             onFilter: (value, record) => value === "yes" ? !!record.email_verified_at : !record.email_verified_at,
-            render: val => val ? (
-                <span style={{ display: "flex", alignItems: "center", gap: 5, color: "#1e8449", fontSize: "0.82rem", fontFamily: "DM Sans,sans-serif" }}>
-                    <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#1e8449", display: "inline-block" }}></span>
-                    Verified
-                </span>
-            ) : (
-                <span style={{ display: "flex", alignItems: "center", gap: 5, color: "#e74c3c", fontSize: "0.82rem", fontFamily: "DM Sans,sans-serif" }}>
-                    <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#e74c3c", display: "inline-block" }}></span>
-                    Not verified
+            render: val => (
+                <span className={`flex items-center gap-1 text-xs ${val ? "text-green-600" : "text-red-600"}`}>
+                    <span className={`w-2 h-2 rounded-full ${val ? "bg-green-600" : "bg-red-600"}`}></span>
+                    {val ? "Verified" : "Not Verified"}
                 </span>
             )
         },
         {
-            title: <span style={thStyle}>Joined</span>,
-            dataIndex: "created_at", width: 130,
+            title: "Joined",
+            dataIndex: "created_at",
+            width: 130,
             render: d => (
-                <span style={{ color: "#8795aa", fontSize: "0.8rem" }}>
+                <span className="text-gray-400 text-xs">
                     {new Date(d).toLocaleDateString("en-PH", { year: "numeric", month: "short", day: "numeric" })}
                 </span>
             )
         },
         {
-            title: <span style={thStyle}>Actions</span>,
+            title: "Actions",
             width: 100,
             render: (_, record) => (
-                <div style={{ display: "flex", gap: 6 }}>
+                <div className="flex gap-2">
                     <Tooltip title="Edit">
-                        <Button size="small" onClick={() => openEdit(record)}
-                            style={{ borderRadius: 8, borderColor: "#b9dffd", color: "#006ac6", background: "#f0f7ff" }}
-                            icon={<IconEdit />} />
+                        <Button
+                            size="small"
+                            type="primary"
+                            onClick={() => openEdit(record)}
+                            icon={<Edit size={14} />}
+                        />
                     </Tooltip>
                     <Tooltip title="Delete">
                         <Popconfirm
                             title={`Delete ${record.username}?`}
                             description="This action cannot be undone."
                             onConfirm={() => handleDelete(record.id)}
-                            okText="Delete" cancelText="Cancel"
-                            okButtonProps={{ danger: true }}>
-                            <Button size="small" danger style={{ borderRadius: 8 }} icon={<IconDelete />} />
+                            okText="Delete"
+                            cancelText="Cancel"
+                            okButtonProps={{ danger: true }}
+                        >
+                            <Button size="small" danger className="rounded-md" icon={<Trash2 size={14} />} />
                         </Popconfirm>
                     </Tooltip>
                 </div>
@@ -179,95 +176,100 @@ export default function UserManagement() {
         }
     ]
 
-    const totalAdmins = users.filter(u => u.role === "admin").length
-    const totalUsers = users.filter(u => u.role === "user").length
-    const unverified = users.filter(u => !u.email_verified_at).length
+    const stats = [
+        { label: "Total Users", value: users.length, bg: "bg-blue-100", text: "text-blue-800" },
+        { label: "Admins", value: totalAdmins, bg: "bg-purple-100", text: "text-purple-700" },
+        { label: "Regular Users", value: totalUsers, bg: "bg-green-100", text: "text-green-700" },
+        { label: "Unverified", value: unverified, bg: "bg-red-100", text: "text-red-600" },
+    ]
 
     return (
-        <div style={{ padding: "2rem", maxWidth: 1100, margin: "0 auto" }}>
+        <div className="p-8 max-w-275 mx-auto">
 
             {/* Header */}
-            <div style={{ marginBottom: "1.75rem" }}>
-                <h1 style={{ fontFamily: "Sora,sans-serif", fontWeight: 700, fontSize: "1.6rem", color: "#0a3c6d", marginBottom: "0.25rem" }}>
-                    User Management
-                </h1>
-                <p style={{ color: "#677890", margin: 0 }}>
-                    Manage all accounts. Your own account is not shown here — use Edit Profile to update it.
-                </p>
+            <div className="mb-7 bg-linear-to-br from-blue-50 to-indigo-50 rounded-xl p-4 sm:p-6 shadow-sm border border-blue-100">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+                    {/* Icon */}
+                    <div className="shrink-0 w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center shadow-md mb-2 sm:mb-0">
+                        <User className="w-5 h-5 text-white" />
+                    </div>
+
+                    {/* Title + Description */}
+                    <div className="flex-1 min-w-0">
+                        <h1 className="font-sora font-bold text-xl sm:text-2xl lg:text-3xl text-blue-900 truncate">
+                            User Management
+                        </h1>
+                        <p className="text-sm sm:text-base text-gray-600 leading-relaxed mt-1 sm:mt-2">
+                            Manage all accounts. Your own account is not shown here — use{' '}
+                            <span className="font-medium text-blue-600">Edit Profile</span> to update it.
+                        </p>
+                    </div>
+                </div>
             </div>
 
-            {/* Stats row */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
-                {[
-                    { label: "Total Users", value: users.length, color: "#0054a0", bg: "#e0effe" },
-                    { label: "Admins", value: totalAdmins, color: "#6c3483", bg: "#e8daef" },
-                    { label: "Regular Users", value: totalUsers, color: "#1e8449", bg: "#d5f5e3" },
-                    { label: "Unverified", value: unverified, color: "#e74c3c", bg: "#fadbd8" },
-                ].map(s => (
-                    <div key={s.label} style={{ background: "white", borderRadius: 14, padding: "1.1rem 1.25rem", border: "1px solid #eceef2", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
-                        <div style={{ fontFamily: "Sora,sans-serif", fontWeight: 700, fontSize: "1.6rem", color: s.color }}>{s.value}</div>
-                        <div style={{ color: "#8795aa", fontSize: "0.78rem", marginTop: 2 }}>{s.label}</div>
+            {/* Stats */}
+            <div className="flex gap-4 overflow-x-auto py-2 mb-6 justify-between">
+                {stats.map(s => (
+                    <div key={s.label} className={`shrink-0 w-60 ${s.bg} rounded-xl p-4 border border-gray-200 shadow-sm`}>
+                        <div className={`font-sora font-bold text-xl ${s.text}`}>{s.value}</div>
+                        <div className="text-gray-400 text-sm mt-1">{s.label}</div>
                     </div>
                 ))}
             </div>
 
             {/* Table card */}
-            <div style={{ background: "white", borderRadius: 16, border: "1px solid #eceef2", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
 
                 {/* Toolbar */}
-                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, padding: "1.25rem 1.5rem", borderBottom: "1px solid #eceef2" }}>
+                <div className="flex flex-wrap justify-between items-center gap-3 p-5 border-b border-gray-200">
                     <div>
-                        <span style={{ fontFamily: "Sora,sans-serif", fontWeight: 600, fontSize: "0.95rem", color: "#0a3c6d" }}>
-                            All Users
-                        </span>
-                        <span style={{ color: "#8795aa", fontSize: "0.8rem", marginLeft: 8 }}>
-                            {filtered.length} record{filtered.length !== 1 ? "s" : ""}
-                        </span>
+                        <span className="font-sora font-semibold text-sm text-blue-900">All Users</span>
+                        <span className="text-gray-400 text-xs ml-2">{filtered.length} record{filtered.length !== 1 && "s"}</span>
                     </div>
-                    <div style={{ display: "flex", gap: 10 }}>
+                    <div className="flex gap-2">
                         <Input
                             placeholder="Search username, email, role…"
-                            prefix={<span style={{ color: "#b1bac9" }}><IconSearch /></span>}
+                            prefix={<Search size={14} className="text-gray-400" />}
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                             allowClear
-                            style={{ width: 260, borderRadius: 10, borderColor: "#d5d9e2" }} />
-                        <Button onClick={openAdd} icon={<IconPlus />}
-                            style={{ borderRadius: 10, fontFamily: "DM Sans,sans-serif", fontWeight: 600, border: "none", color: "white", display: "flex", alignItems: "center", gap: 6, background: "linear-gradient(135deg,#0054a0,#0c87e8)", boxShadow: "0 3px 10px rgba(12,135,232,0.30)" }}>
+                            className="w-64 rounded-lg"
+                        />
+                        <Button
+                            onClick={openAdd}
+                            type="primary"
+                            icon={<Plus size={14} />}
+                        >
                             Add User
                         </Button>
                     </div>
                 </div>
 
+                {/* Table */}
                 <div className="overflow-x-auto">
                     <Table
-                    dataSource={filtered}
-                    columns={columns}
-                    rowKey="id"
-                    loading={loading}
-                    pagination={{
-                        pageSize: 8,
-                        showSizeChanger: false,
-                        showTotal: t => <span style={{ color: "#8795aa", fontSize: "0.875rem" }}>{t} users total</span>,
-                        style: { padding: "16px 24px" },
-                    }}
-                    style={{ borderRadius: "0 0 16px 16px" }}
-                    locale={{
-                        emptyText: (
-                            <div style={{ padding: "3rem 0", textAlign: "center" }}>
-                                <div style={{ width: 52, height: 52, borderRadius: 14, background: "#e0effe", color: "#0054a0", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1rem" }}>
-                                    <svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26">
-                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                                    </svg>
+                        dataSource={filtered}
+                        columns={columns}
+                        rowKey="id"
+                        loading={loading}
+                        pagination={{
+                            pageSize: 8,
+                            showSizeChanger: false,
+                            showTotal: t => <span className="text-gray-400 text-sm">{t} users total</span>,
+                        }}
+                        className="rounded-b-2xl"
+                        locale={{
+                            emptyText: (
+                                <div className="py-12 text-center">
+                                    <div className="w-12 h-12 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center mx-auto mb-2">
+                                        <Plus size={20} />
+                                    </div>
+                                    <p className="font-sora font-semibold text-gray-700 mb-1">No users found</p>
+                                    <p className="text-gray-400 text-sm">{search ? "Try a different search." : 'Click "Add User" to create one.'}</p>
                                 </div>
-                                <p style={{ fontFamily: "Sora,sans-serif", fontWeight: 600, color: "#444f62", margin: 0 }}>No users found</p>
-                                <p style={{ color: "#8795aa", fontSize: "0.875rem", marginTop: 4 }}>
-                                    {search ? "Try a different search." : 'Click "Add User" to create one.'}
-                                </p>
-                            </div>
-                        )
-                    }}
-                />
+                            )
+                        }}
+                    />
                 </div>
             </div>
 
