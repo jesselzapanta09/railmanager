@@ -116,7 +116,7 @@ export default function UserManagement() {
             onFilter: (value, record) => record.role === value,
             render: role => (
                 <Tag
-                    className="rounded-md font-mono font-semibold text-xs border-none"
+                    variant="filled"
                     color={role === "admin" ? "blue" : "green"}
                 >
                     {role.toUpperCase()}

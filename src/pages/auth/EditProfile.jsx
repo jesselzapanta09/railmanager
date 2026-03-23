@@ -102,7 +102,7 @@ export default function EditProfile() {
       {/* Avatar Card */}
       <div className="flex items-center gap-4 p-4 rounded-xl bg-white border border-gray-200 shadow mb-6">
         {avatarPreview && !removeAvatar ? (
-          <img src={avatarPreview} alt="preview" className="w-16 h-16 rounded-full object-cover border-2 border-blue-100 flex-shrink-0" />
+          <img src={avatarPreview} alt="preview" className="w-16 h-16 rounded-full object-cover border-2 border-blue-100 shrink-0" />
         ) : (
           <Avatar user={removeAvatar ? { username: user?.username } : user} size={64} fontSize="1.4rem" />
         )}

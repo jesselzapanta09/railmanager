@@ -115,7 +115,7 @@ export default function ManageTrains() {
       width: 130,
       sorter: (a, b) => parseFloat(a.price) - parseFloat(b.price),
       render: price => (
-        <Tag className="bg-green-100 text-green-700 rounded-md font-mono font-semibold text-xs px-2 py-1">
+        <Tag color="green" variant="solid">
           ₱{parseFloat(price).toFixed(2)}
         </Tag>
       )

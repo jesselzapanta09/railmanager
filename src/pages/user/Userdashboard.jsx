@@ -80,7 +80,7 @@ export default function UserDashboard() {
       width: 130,
       sorter: (a, b) => parseFloat(a.price) - parseFloat(b.price),
       render: price => (
-        <Tag className="!bg-green-100 !text-green-700 !border-none !rounded-md font-mono font-semibold">
+        <Tag color="green" variant="solid">
           ₱{parseFloat(price).toFixed(2)}
         </Tag>
       )
