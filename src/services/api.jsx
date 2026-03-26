@@ -59,21 +59,21 @@ export const updateProfile = (data) => {
 }
 
 // ── Trains ───────────────────────────────────────────────────────
-export const getTrains    = ()          => api.get("/train")
-export const getTrainById = (id)        => api.get(`/train/${id}`)
+export const getTrains    = ()          => api.get("/trains")
+export const getTrainById = (id)        => api.get(`/trains/${id}`)
 
 // Image-aware: uses FormData so multer can parse the file
 export const createTrain = (data) => {
   const form = new FormData()
   Object.entries(data).forEach(([k, v]) => { if (v !== undefined && v !== null) form.append(k, v) })
-  return api.post("/train", form, { headers: { "Content-Type": "multipart/form-data" } })
+  return api.post("/trains", form, { headers: { "Content-Type": "multipart/form-data" } })
 }
 export const updateTrain = (id, data) => {
   const form = new FormData()
   Object.entries(data).forEach(([k, v]) => { if (v !== undefined && v !== null) form.append(k, v) })
-  return api.put(`/train/${id}`, form, { headers: { "Content-Type": "multipart/form-data" } })
+  return api.put(`/trains/${id}`, form, { headers: { "Content-Type": "multipart/form-data" } })
 }
-export const deleteTrain = (id) => api.delete(`/train/${id}`)
+export const deleteTrain = (id) => api.delete(`/trains/${id}`)
 
 export default api
 
