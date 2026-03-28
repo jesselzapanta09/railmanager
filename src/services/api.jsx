@@ -43,6 +43,9 @@ api.interceptors.response.use(
 export const imageUrl = (imgPath) =>
   imgPath ? `${BASE}${imgPath}` : null
 
+// ── About ───────────────────────────────────────────────────────
+export const getAbout = () => api.get("/about");
+
 // ── Auth ─────────────────────────────────────────────────────────
 export const register           = (data)  => api.post("/register", data)
 export const login              = (data)  => api.post("/login", data)

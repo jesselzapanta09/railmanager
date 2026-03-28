@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import {
@@ -11,11 +11,29 @@ import {
     ChevronRight,
     Check
 } from "lucide-react";
-import { Button } from "antd";
+import { getAbout } from "./services/api";
 
 export default function Home() {
     const { isAuthenticated } = useAuth();
     const heroRef = useRef(null);
+
+    const [aboutText, setAboutText] = useState("");
+    const [subtitle, setSubtitle] = useState("");
+
+    useEffect(() => {
+        async function fetchAbout() {
+            try {
+                const { data } = await getAbout();
+                setAboutText(data.title);
+                setSubtitle(data.subtitle);
+            } catch (err) {
+                console.error("Failed to fetch about:", err);
+                setAboutText("");
+            }
+        }
+        fetchAbout();
+    }, []);
+
 
     // Parallax subtle scroll on hero
     useEffect(() => {
@@ -31,11 +49,11 @@ export default function Home() {
     return (
         <div className="font-body">
             {/* HERO */}
-            <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-rail-950 via-rail-900 to-rail-700">
+            <section className="relative min-h-screen flex items-center overflow-hidden bg-linear-to-br from-rail-950 via-rail-900 to-rail-700">
                 {/* Decorative background */}
                 <div ref={heroRef} className="absolute inset-0 pointer-events-none overflow-hidden">
-                    <div className="absolute top-[-15%] right-[-10%] w-[700px] h-[700px] rounded-full bg-rail-500/10 border border-white/5" />
-                    <div className="absolute bottom-[-20%] left-[-8%] w-[500px] h-[500px] rounded-full bg-rail-700/20 border border-white/5" />
+                    <div className="absolute top-[-15%] right-[-10%] w-175 h-175 rounded-full bg-rail-500/10 border border-white/5" />
+                    <div className="absolute bottom-[-20%] left-[-8%] w-125 h-125 rounded-full bg-rail-700/20 border border-white/5" />
                     <div className="absolute top-[30%] left-[5%] w-80 h-80 rounded-full bg-rail-500/5" />
                     {/* Grid dots */}
                     <svg className="absolute inset-0 opacity-[0.04]" width="100%" height="100%">
@@ -51,7 +69,7 @@ export default function Home() {
                 {/* Hero content */}
                 <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 pt-32 pb-20 w-full flex flex-wrap gap-12 items-center">
                     {/* Left text */}
-                    <div className="flex-1 min-w-[300px] max-w-[600px]">
+                    <div className="flex-1 min-w-75 max-w-150">
                         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-6 bg-sky-400/10 border border-sky-400/25">
                             <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
                             <span className="text-sky-300 text-xs font-mono font-medium">
@@ -66,13 +84,13 @@ export default function Home() {
                         </h1>
 
                         <p className="text-blue-200 text-lg leading-relaxed max-w-lg mb-10">
-                            A complete REST API + React dashboard for managing train records — built with Node.js, MySQL, JWT authentication, and Ant Design.
+                            A complete REST API + React dashboard for managing train records.
                         </p>
 
                         <div className="flex flex-wrap gap-3">
                             <Link
                                 to={isAuthenticated ? "/dashboard" : "/register"}
-                                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-br from-rail-700 to-rail-500 text-white font-bold shadow-xl shadow-rail-500/40 transition-transform hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-rail-500/50"
+                                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-linear-to-br from-rail-700 to-rail-500 text-white font-bold shadow-xl shadow-rail-500/40 transition-transform hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-rail-500/50"
                             >
                                 {isAuthenticated ? "Go to Dashboard" : "Get Started Free"}
                                 <ChevronRight className="w-4 h-4" />
@@ -85,23 +103,21 @@ export default function Home() {
                             </Link>
                         </div>
 
-                        {/* Mini stats */}
-                        <div className="flex gap-8 mt-12 flex-wrap">
-                            {[
-                                ["+10", "API Endpoints"],
-                                ["3", "DB Tables"],
-                                ["JWT", "Auth"]
-                            ].map(([val, label]) => (
-                                <div key={label}>
-                                    <div className="font-display font-bold text-3xl text-white">{val}</div>
-                                    <div className="text-sky-300 text-xs mt-0.5">{label}</div>
+                        {/* About */}
+                        <div className="flex flex-wrap gap-4 mt-8 sm:gap-6 sm:mt-10 md:gap-8 md:mt-12">
+                            <div className="w-full sm:w-auto">
+                                <div className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-white">
+                                    {aboutText || "Loading..."}
                                 </div>
-                            ))}
+                                <div className="text-sky-300 text-sm sm:text-md md:text-lg mt-1 sm:mt-1.5 md:mt-2">
+                                    {subtitle}
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     {/* Right floating card */}
-                    <div className="flex-1 min-w-[250px] max-w-sm flex justify-center">
+                    <div className="flex-1 min-w-62.5 max-w-sm flex justify-center">
                         <div className="bg-white/5 rounded-3xl border border-white/10 p-6 w-full backdrop-blur-xl shadow-2xl">
                             <div className="flex justify-between items-center mb-4">
                                 <span className="font-semibold text-white text-sm">Train Fleet</span>
@@ -136,8 +152,28 @@ export default function Home() {
                 {/* Bottom wave */}
                 <div className="absolute bottom-0 left-0 right-0">
                     <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="block w-full">
-                        <path d="M0 40C240 80 480 0 720 40C960 80 1200 0 1440 40V80H0V40Z" fill="#f6f7f9" />
+                        <path d="M0 40C240 80 480 0 720 40C960 80 1200 0 1440 40V80H0V40Z" fill="#DBEAFE" />
                     </svg>
+                </div>
+            </section>
+
+
+            {/* TECH STACK */}
+            <section className="py-14 px-6 sm:px-8 bg-blue-100 border-b border-blue-200">
+                <div className="max-w-7xl mx-auto text-center">
+                    <p className="text-steel-800 text-xs font-mono tracking-widest mb-6 uppercase">Frontend Built With</p>
+                    <div className="flex flex-wrap justify-center gap-3">
+                        {[
+                            { label: "React 19", color: "text-blue-600", bg: "bg-blue-50" },
+                            { label: "Vite 6", color: "text-purple-600", bg: "bg-purple-50" },
+                            { label: "Tailwind CSS v4", color: "text-sky-600", bg: "bg-sky-50" },
+                            { label: "Ant Design v6", color: "text-orange-600", bg: "bg-orange-50" },
+                            { label: "Axios", color: "text-green-600", bg: "bg-green-50" },
+                            { label: "React Router 6", color: "text-red-600", bg: "bg-red-50" },
+                        ].map(t => (
+                            <span key={t.label} className={`px-5 py-2 rounded-full font-semibold text-sm ${t.color} ${t.bg}`}>{t.label}</span>
+                        ))}
+                    </div>
                 </div>
             </section>
 
@@ -175,30 +211,6 @@ export default function Home() {
                     </div>
                 </div>
             </section>
-
-            {/* TECH STACK */}
-            <section className="py-14 px-6 sm:px-8 bg-gray-50 border-t border-gray-200">
-                <div className="max-w-7xl mx-auto text-center">
-                    <p className="text-steel-400 text-xs font-mono tracking-widest mb-6 uppercase">Built With</p>
-                    <div className="flex flex-wrap justify-center gap-3">
-                        {[
-                            { label: "React 19", color: "text-blue-600", bg: "bg-blue-50" },
-                            { label: "Vite 6", color: "text-purple-600", bg: "bg-purple-50" },
-                            { label: "Tailwind CSS v4", color: "text-sky-600", bg: "bg-sky-50" },
-                            { label: "Ant Design v6", color: "text-orange-600", bg: "bg-orange-50" },
-                            { label: "Axios", color: "text-green-600", bg: "bg-green-50" },
-                            { label: "React Router 6", color: "text-red-600", bg: "bg-red-50" },
-                            { label: "Node.js", color: "text-green-600", bg: "bg-green-50" },
-                            { label: "Express.js", color: "text-gray-700", bg: "bg-gray-100" },
-                            { label: "MySQL 8", color: "text-sky-600", bg: "bg-sky-50" },
-                            { label: "JWT", color: "text-purple-600", bg: "bg-purple-50" },
-                        ].map(t => (
-                            <span key={t.label} className={`px-5 py-2 rounded-full font-semibold text-sm ${t.color} ${t.bg}`}>{t.label}</span>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
         </div>
     );
 }
