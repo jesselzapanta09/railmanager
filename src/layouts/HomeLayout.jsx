@@ -151,7 +151,7 @@ export default function HomeLayout() {
                                 Tech Stack
                             </p>
                             <div className="flex flex-col gap-1 text-blue-200 text-sm">
-                                {["React 19 + Vite 6", "Tailwind CSS v4", "Ant Design v6", "Node.js + Express", "MySQL + JWT"].map(
+                                {["React 19 + Vite 6", "Tailwind CSS v4", "Ant Design v6"].map(
                                     (t) => (
                                         <div key={t}>{t}</div>
                                     )
