@@ -8,6 +8,7 @@ export default function TrainModal({ open, onClose, onSubmit, initialValues, loa
     const [form] = Form.useForm()
     const [imageFile, setImageFile] = useState(null)
     const [preview, setPreview] = useState(null)
+    const [removeImage, setRemoveImage] = useState(false)
 
     // Reusable styles
     const labelClass = "font-medium text-gray-700"
@@ -19,6 +20,7 @@ export default function TrainModal({ open, onClose, onSubmit, initialValues, loa
     useEffect(() => {
         if (open) {
             setImageFile(null)
+            setRemoveImage(false)
             if (initialValues) {
                 form.setFieldsValue({
                     train_name: initialValues.train_name,
@@ -36,7 +38,9 @@ export default function TrainModal({ open, onClose, onSubmit, initialValues, loa
     const handleOk = async () => {
         try {
             const values = await form.validateFields()
-            onSubmit({ ...values, image: imageFile || undefined })
+            if (imageFile) values.image = imageFile
+            if (removeImage) values.remove_image = "true"
+            onSubmit(values)
         } catch (err) {
             console.log(err)
         }
@@ -56,6 +60,7 @@ export default function TrainModal({ open, onClose, onSubmit, initialValues, loa
         reader.onload = (e) => setPreview(e.target.result)
         reader.readAsDataURL(file)
         setImageFile(file)
+        setRemoveImage(false)
         return false
     }
 
@@ -141,7 +146,7 @@ export default function TrainModal({ open, onClose, onSubmit, initialValues, loa
                             beforeUpload={handleImageChange}
                             className="rounded-lg"
                         >
-                            {preview ? (
+                            {preview && !removeImage ? (
                                 <div className="relative">
                                     <img
                                         src={preview}
@@ -162,10 +167,10 @@ export default function TrainModal({ open, onClose, onSubmit, initialValues, loa
                                 </div>
                             )}
                         </Upload.Dragger>
-                        {preview && (
+                        {preview && !removeImage && (
                             <button
                                 type="button"
-                                onClick={() => { setPreview(null); setImageFile(null) }}
+                                onClick={() => { setPreview(null); setImageFile(null); setRemoveImage(mode === "edit") }}
                                 className="mt-2 text-red-600 text-xs font-medium underline hover:no-underline"
                             >
                                 Remove image

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react"
-import { Table, Button, Popconfirm, Input, Tag, Tooltip, App } from "antd"
-import { Plus, Edit, Trash2, Search, User } from "lucide-react"
-import { getUsers, createUser, updateUser, deleteUser } from "../../services/api"
+import { Table, Button, Popconfirm, Input, Tag, Tooltip, App, Modal, Spin } from "antd"
+import { Plus, Edit, Trash2, Search, User, User2 } from "lucide-react"
+import { getUsers, getUserById, createUser, updateUser, deleteUser } from "../../services/api"
 import UserModal from "../../components/Usermodal"
 import Avatar from "../../components/Avatar"
 
@@ -16,6 +16,10 @@ export default function UserManagement() {
     const [modalMode, setModalMode] = useState("add")
     const [editRecord, setEditRecord] = useState(null)
     const [submitLoading, setSubmitLoading] = useState(false)
+
+    const [viewModalOpen, setViewModalOpen] = useState(false)
+    const [viewUser, setViewUser] = useState(null)
+    const [viewLoading, setViewLoading] = useState(false)
 
     const fetchUsers = useCallback(async () => {
         setLoading(true)
@@ -44,6 +48,20 @@ export default function UserManagement() {
 
     const openAdd = () => { setModalMode("add"); setEditRecord(null); setModalOpen(true) }
     const openEdit = r => { setModalMode("edit"); setEditRecord(r); setModalOpen(true) }
+
+    const openView = async (id) => {
+        setViewModalOpen(true)
+        setViewLoading(true)
+        try {
+            const res = await getUserById(id)
+            setViewUser(res.data.data)
+        } catch {
+            message.error("Failed to load user details.")
+            setViewModalOpen(false)
+        } finally {
+            setViewLoading(false)
+        }
+    }
 
     const handleSubmit = async values => {
         setSubmitLoading(true)
@@ -102,7 +120,12 @@ export default function UserManagement() {
                 <div className="flex items-center gap-3">
                     <Avatar user={record} size={34} fontSize="0.85rem" />
                     <div>
-                        <div className="font-semibold text-blue-900 text-sm">{username}</div>
+                        <div
+                            onClick={() => openView(record.id)}
+                            className="font-semibold text-blue-900 text-sm cursor-pointer hover:underline"
+                        >
+                            {username}
+                        </div>
                         <div className="text-gray-400 text-xs">{record.email}</div>
                     </div>
                 </div>
@@ -115,10 +138,7 @@ export default function UserManagement() {
             filters: [{ text: "Admin", value: "admin" }, { text: "User", value: "user" }],
             onFilter: (value, record) => record.role === value,
             render: role => (
-                <Tag
-                    variant="filled"
-                    color={role === "admin" ? "blue" : "green"}
-                >
+                <Tag variant="filled" color={role === "admin" ? "blue" : "green"}>
                     {role.toUpperCase()}
                 </Tag>
             )
@@ -189,12 +209,10 @@ export default function UserManagement() {
             {/* Header */}
             <div className="mb-7 bg-linear-to-br from-blue-50 to-indigo-50 rounded-xl p-4 sm:p-6 shadow-sm border border-blue-100">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    {/* Icon */}
                     <div className="shrink-0 w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center shadow-md mb-2 sm:mb-0">
                         <User className="w-5 h-5 text-white" />
                     </div>
 
-                    {/* Title + Description */}
                     <div className="flex-1 min-w-0">
                         <h1 className="font-sora font-bold text-xl sm:text-2xl lg:text-3xl text-blue-900 truncate">
                             User Management
@@ -217,15 +235,15 @@ export default function UserManagement() {
                 ))}
             </div>
 
-            {/* Table card */}
+            {/* Table */}
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
 
-                {/* Toolbar */}
                 <div className="flex flex-wrap justify-between items-center gap-3 p-5 border-b border-gray-200">
                     <div>
                         <span className="font-sora font-semibold text-sm text-blue-900">All Users</span>
                         <span className="text-gray-400 text-xs ml-2">{filtered.length} record{filtered.length !== 1 && "s"}</span>
                     </div>
+
                     <div className="flex gap-2">
                         <Input
                             placeholder="Search username, email, role…"
@@ -235,43 +253,78 @@ export default function UserManagement() {
                             allowClear
                             className="w-64 rounded-lg"
                         />
-                        <Button
-                            onClick={openAdd}
-                            type="primary"
-                            icon={<Plus size={14} />}
-                        >
+                        <Button onClick={openAdd} type="primary" icon={<Plus size={14} />}>
                             Add User
                         </Button>
                     </div>
                 </div>
 
-                {/* Table */}
-                <div className="overflow-x-auto">
-                    <Table
-                        dataSource={filtered}
-                        columns={columns}
-                        rowKey="id"
-                        loading={loading}
-                        pagination={{
-                            pageSize: 8,
-                            showSizeChanger: false,
-                            showTotal: t => <span className="text-gray-400 text-sm">{t} users total</span>,
-                        }}
-                        className="rounded-b-2xl"
-                        locale={{
-                            emptyText: (
-                                <div className="py-12 text-center">
-                                    <div className="w-12 h-12 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center mx-auto mb-2">
-                                        <Plus size={20} />
-                                    </div>
-                                    <p className="font-sora font-semibold text-gray-700 mb-1">No users found</p>
-                                    <p className="text-gray-400 text-sm">{search ? "Try a different search." : 'Click "Add User" to create one.'}</p>
-                                </div>
-                            )
-                        }}
-                    />
-                </div>
+                <Table
+                    dataSource={filtered}
+                    columns={columns}
+                    rowKey="id"
+                    loading={loading}
+                    pagination={{
+                        pageSize: 8,
+                        showSizeChanger: false,
+                        showTotal: t => <span className="text-gray-400 text-sm">{t} users total</span>,
+                    }}
+                />
             </div>
+
+            <Modal
+                open={viewModalOpen}
+                onCancel={() => setViewModalOpen(false)}
+                footer={null}
+            // title="User Details"
+            >
+                {viewLoading ? (
+                    <div className="flex justify-center py-10">
+                        <Spin />
+                    </div>
+                ) : viewUser && (
+                    <div className="space-y-4 pt-20">
+
+                        {/* Header */}
+                        <div className="absolute top-0 left-0 w-full p-6 bg-linear-to-tr from-blue-900 to-blue-700 flex items-center gap-3 rounded-t-xl z-10">
+                            <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                                <User2 className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                                <h3 className="text-white font-bold text-lg">
+                                    User Details
+                                </h3>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <Avatar user={viewUser} size={50} fontSize="1rem" />
+                            <div>
+                                <div className="font-semibold text-blue-900">{viewUser.username}</div>
+                                <div className="text-gray-400 text-sm">{viewUser.email}</div>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-2">
+                            <Tag color={viewUser.role === "admin" ? "blue" : "green"}>
+                                {viewUser.role.toUpperCase()}
+                            </Tag>
+
+                            <Tag color={viewUser.email_verified_at ? "green" : "red"}>
+                                {viewUser.email_verified_at ? "Verified" : "Not Verified"}
+                            </Tag>
+                        </div>
+
+                        <div className="text-sm text-gray-500">
+                            Joined: {new Date(viewUser.created_at).toLocaleDateString("en-PH", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric"
+                            })}
+                        </div>
+                    </div>
+                )}
+            </Modal>
 
             <UserModal
                 open={modalOpen}
