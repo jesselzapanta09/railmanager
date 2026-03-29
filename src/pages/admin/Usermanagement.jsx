@@ -259,17 +259,20 @@ export default function UserManagement() {
                     </div>
                 </div>
 
-                <Table
-                    dataSource={filtered}
-                    columns={columns}
-                    rowKey="id"
-                    loading={loading}
-                    pagination={{
-                        pageSize: 8,
-                        showSizeChanger: false,
-                        showTotal: t => <span className="text-gray-400 text-sm">{t} users total</span>,
-                    }}
-                />
+                <div className="overflow-x-auto">
+                    <Table
+                        dataSource={filtered}
+                        columns={columns}
+                        rowKey="id"
+                        loading={loading}
+                        pagination={{
+                            pageSize: 8,
+                            showSizeChanger: false,
+                            showTotal: t => <span className="text-gray-400 text-sm">{t} users total</span>,
+                        }}
+                    />
+                </div>
+
             </div>
 
             <Modal
