@@ -1,8 +1,6 @@
 # MSIT 114 - Activity 17 , 19, 21, 23 Frontend/Client
 
-This project is the **client-side** application for the RailManager system. It interacts with an ExpressJS API to manage users, authentication, and entities(train and user) with image support.
-
----
+This project is the **client-side** application for the RailManager system.
 
 ## Installation & Setup
 
